@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cek Rekening API via GitHub Pages</title>
+</head>
+<body>
+  <h1>Cek Rekening</h1>
+  <form id="cekForm">
+    <label>
+      Bank Code: <input type="text" id="bankCode" value="gopay" required />
+    </label><br /><br />
+    <label>
+      Account Number: <input type="text" id="accountNumber" value="085953776400" required />
+    </label><br /><br />
+    <button type="submit">Cek Rekening</button>
+  </form>
+  
+  <pre id="result"></pre>
+
+  <script>
+    document.getElementById('cekForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const bankCode = document.getElementById('bankCode').value.trim();
+      const accountNumber = document.getElementById('accountNumber').value.trim();
+      const resultEl = document.getElementById('result');
+      resultEl.textContent = 'Loading...';
+
+      try {
+        const response = await fetch('https://cekrekening-api.belibayar.online/api/v1/account-inquiry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+          },
+          body: JSON.stringify({
+            account_bank: bankCode,
+            account_number: accountNumber
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('HTTP error: ' + response.status);
+        }
+
+        const data = await response.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        resultEl.textContent = 'Error: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
